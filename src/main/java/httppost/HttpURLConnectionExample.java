@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
  
+
 import javax.net.ssl.HttpsURLConnection;
  
 public class HttpURLConnectionExample {
@@ -16,6 +17,9 @@ public class HttpURLConnectionExample {
 	public static void main(String[] args) throws Exception {
  
 		HttpURLConnectionExample http = new HttpURLConnectionExample();
+		// PROXY
+		System.setProperty("http.proxyHost", "www-proxy.exu.ericsson.se");
+		System.setProperty("http.proxyPort", "8080");
  
 		System.out.println("Testing 1 - Send Http GET request");
 		http.sendGet();
@@ -28,7 +32,7 @@ public class HttpURLConnectionExample {
 	// HTTP GET request
 	private void sendGet() throws Exception {
  
-		String url = "http://www.google.com/search?q=mkyong";
+		String url = "http://www.baidu.com/";
  
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -38,6 +42,7 @@ public class HttpURLConnectionExample {
  
 		//add request header
 		con.setRequestProperty("User-Agent", USER_AGENT);
+		con.connect();
  
 		int responseCode = con.getResponseCode();
 		System.out.println("\nSending 'GET' request to URL : " + url);

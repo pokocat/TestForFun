@@ -8,52 +8,41 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 public class TestGetPost {
-	/**
-	 * 向指定URL发送GET方法的请求
-	 * 
-	 * @param url
-	 *            发送请求的URL
-	 * @param param
-	 *            请求参数，请求参数应该是name1=value1&name2=value2的形式。
-	 * @return URL所代表远程资源的响应
-	 */
-
-	public static String sendGet(String url, String param) {
+	public static String sendGet(String url, String param, String ip) {
 		String result = "";
 		BufferedReader in = null;
+		System.out.println("Connecting at ::::" + ip);
 		try {
 			String urlName = url + "?" + param;
 			URL realUrl = new URL(urlName);
-			// 打开和URL之间的连接
 			URLConnection conn = realUrl.openConnection();
-			// 设置通用的请求属性
 			conn.setRequestProperty("Accept", "*/*");
 			conn.setRequestProperty("Connection", "Keep-Alive");
-			conn.setRequestProperty(
-					"User-Agent",
-					"Mozilla/5.0 (iPhone; CPU iPhone OS 7_0_2 like Mac OS X) AppleWebKit/537.51.1 (KHTML, like Gecko) Version/7.0 Mobile/11A4449d Safari/9537.53");
-			// 建立实际的连接
+			conn.setRequestProperty("User-Agent",
+					"Mozilla/5.0 (Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.16 Safari/537.36");
+			conn.setRequestProperty("CLIENT-IP", ip);
+			conn.setRequestProperty("X-FORWARDED-FOR", ip);
+
 			conn.connect();
-			// 获取所有响应头字段
 			Map<String, List<String>> map = conn.getHeaderFields();
-			// 遍历所有的响应头字段
+			String header = "";
 			for (String key : map.keySet()) {
-				System.out.println(key + "--->" + map.get(key));
+				header += key + "\t--->" + map.get(key) + "\n";
 			}
-			// 定义BufferedReader输入流来读取URL的响应
+			System.out.println("===============HEADER================\n" + header);
 			in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 			String line;
 			while ((line = in.readLine()) != null) {
-				result += "/n" + line;
+				result += "/n" + line + "\t";
 			}
 		} catch (Exception e) {
-			System.out.println("发送GET请求出现异常！" + e);
+			System.out.println("GET:\t" + e);
 			e.printStackTrace();
-		}
-		// 使用finally块来关闭输入流
-		finally {
+		} finally {
 			try {
 				if (in != null) {
 					in.close();
@@ -65,49 +54,40 @@ public class TestGetPost {
 		return result;
 	}
 
-	/**
-	 * 向指定URL发送POST方法的请求
-	 * 
-	 * @param url
-	 *            发送请求的URL
-	 * @param param
-	 *            请求参数，请求参数应该是name1=value1&name2=value2的形式。
-	 * @return URL所代表远程资源的响应
-	 */
 	public static String sendPost(String url, String param) {
 		PrintWriter out = null;
 		BufferedReader in = null;
 		String result = "";
 		try {
 			URL realUrl = new URL(url);
-			// 打开和URL之间的连接
+
 			URLConnection conn = realUrl.openConnection();
-			// 设置通用的请求属性
+
 			conn.setRequestProperty("accept", "*/*");
 			conn.setRequestProperty("connection", "Keep-Alive");
-			conn.setRequestProperty(
-					"User-Agent",
-					"Mozilla/5.0 (iPhone; CPU iPhone OS 7_0_2 like Mac OS X) AppleWebKit/537.51.1 (KHTML, like Gecko) Version/7.0 Mobile/11A4449d Safari/9537.53");
-			// 发送POST请求必须设置如下两行
+			conn.setRequestProperty("User-Agent",
+					"Mozilla/5.0 (Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.16 Safari/537.36");
+			conn.setRequestProperty("CLIENT-IP", "202.103.229.111");
+			conn.setRequestProperty("X-FORWARDED-FOR", "202.103.229.111");
+			// POST
 			conn.setDoOutput(true);
 			conn.setDoInput(true);
-			// 获取URLConnection对象对应的输出流
+			// URLConnection
 			out = new PrintWriter(conn.getOutputStream());
-			// 发送请求参数
 			out.print(param);
-			// flush输出流的缓冲
+			// flush
 			out.flush();
-			// 定义BufferedReader输入流来读取URL的响应
+			// BufferedReaderdURL
 			in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 			String line;
 			while ((line = in.readLine()) != null) {
 				result += "/n" + line;
 			}
 		} catch (Exception e) {
-			System.out.println("发送POST请求出现异常！" + e);
+			System.out.println("POST" + e);
 			e.printStackTrace();
 		}
-		// 使用finally块来关闭输出流、输入流
+		// finally
 		finally {
 			try {
 				if (out != null) {
@@ -123,13 +103,38 @@ public class TestGetPost {
 		return result;
 	}
 
-	// 提供主方法，测试发送GET请求和POST请求
+	private static String ipGenerator() {
+		Random rand = new Random();
+		int ip1 = 167;
+		int ip2 = 216;
+		int ip3 = rand.nextInt(255) + 1;
+		int ip4 = rand.nextInt(255) + 1;
+		return ip1 + "." + ip2 + "." + ip3 + "." + ip4;
+	}
+
 	public static void main(String args[]) {
-		// 发送GET请求
-		String s = TestGetPost.sendGet("http://www.baidu.com/", null);
-		System.out.println(s);
-		// 发送POST请求
-		String s1 = TestGetPost.sendPost("http://posttestserver.com/post.php", "user=李刚&pass=abc");
-		System.out.println(s1);
+		// PROXY
+		System.setProperty("http.proxyHost", "www-proxy.exu.ericsson.se");
+		System.setProperty("http.proxyPort", "8080");
+		// GET
+
+		for (int i = 0; i < 800; i++) {
+			String s = TestGetPost.sendGet("http://ck101.com/?fromuid=1435479", null, ipGenerator());
+			// System.out.println("===============RESPONSE================\n" + s);
+			try {
+				long time = new Random().nextInt(5000) + 200;
+				System.out.println("Sleep for " + time + " now.......");
+				TimeUnit.MILLISECONDS.sleep(time);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			System.out.println("===============Total connection: " + (i + 1) + "================\n");
+
+		}
+
+		// POST
+		// String s1 = TestGetPost.sendPost("http://posttestserver.com/post.php", "user=&pass=abc");
+		// System.out.println(s1);
 	}
 }

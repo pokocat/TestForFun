@@ -3,4 +3,11 @@
   <groupId>com.pokocat</groupId>
   <artifactId>TestForFun</artifactId>
   <version>0.0.1-SNAPSHOT</version>
+  <dependencies>
+  	<dependency>
+  		<groupId>apache-log4j</groupId>
+  		<artifactId>log4j</artifactId>
+  		<version>1.2.15</version>
+  	</dependency>
+  </dependencies>
 </project>
