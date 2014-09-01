@@ -122,7 +122,7 @@ public class TestGetPost {
 			String s = TestGetPost.sendGet("http://ck101.com/?fromuid=1435479", null, ipGenerator());
 			// System.out.println("===============RESPONSE================\n" + s);
 			try {
-				long time = new Random().nextInt(5000) + 200;
+				long time = new Random().nextInt(10000) + 200;
 				System.out.println("Sleep for " + time + " now.......");
 				TimeUnit.MILLISECONDS.sleep(time);
 			} catch (InterruptedException e) {

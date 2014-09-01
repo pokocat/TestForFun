@@ -9,5 +9,15 @@
   		<artifactId>log4j</artifactId>
   		<version>1.2.15</version>
   	</dependency>
+  	<dependency>
+  		<groupId>org.apache.httpcomponents</groupId>
+  		<artifactId>httpclient</artifactId>
+  		<version>4.4-alpha1</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>com.facebook.thirdparty</groupId>
+  		<artifactId>libsvm</artifactId>
+  		<version>3.18.1</version>
+  	</dependency>
   </dependencies>
 </project>
