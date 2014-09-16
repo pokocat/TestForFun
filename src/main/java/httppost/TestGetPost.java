@@ -26,7 +26,6 @@ public class TestGetPost {
 					"Mozilla/5.0 (Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.16 Safari/537.36");
 			conn.setRequestProperty("CLIENT-IP", ip);
 			conn.setRequestProperty("X-FORWARDED-FOR", ip);
-
 			conn.connect();
 			Map<String, List<String>> map = conn.getHeaderFields();
 			String header = "";
