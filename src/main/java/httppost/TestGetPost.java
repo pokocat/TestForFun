@@ -11,6 +11,10 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
+import javax.net.ssl.HttpsURLConnection;
+
+import org.apache.commons.httpclient.ProxyHost;
+
 public class TestGetPost {
 	public static String sendGet(String url, String param, String ip) {
 		String result = "";
@@ -20,12 +24,60 @@ public class TestGetPost {
 			String urlName = url + "?" + param;
 			URL realUrl = new URL(urlName);
 			URLConnection conn = realUrl.openConnection();
+				
+			
 			conn.setRequestProperty("Accept", "*/*");
 			conn.setRequestProperty("Connection", "Keep-Alive");
 			conn.setRequestProperty("User-Agent",
 					"Mozilla/5.0 (Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.16 Safari/537.36");
 			conn.setRequestProperty("CLIENT-IP", ip);
 			conn.setRequestProperty("X-FORWARDED-FOR", ip);
+			conn.connect();
+			Map<String, List<String>> map = conn.getHeaderFields();
+			String header = "";
+			for (String key : map.keySet()) {
+				header += key + "\t--->" + map.get(key) + "\n";
+			}
+			System.out.println("===============HEADER================\n" + header);
+			in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+			String line;
+			while ((line = in.readLine()) != null) {
+				result += "/n" + line + "\t";
+			}
+		} catch (Exception e) {
+			System.out.println("GET:\t" + e);
+			e.printStackTrace();
+		} finally {
+			try {
+				if (in != null) {
+					in.close();
+				}
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			}
+		}
+		return result;
+	}
+	
+	public static String sendHttpsGet(String url) {
+		String result = "";
+		BufferedReader in = null;
+		System.out.println("Connecting at ::::" + url);
+		try {
+			String urlName = url ;
+			URL realUrl = new URL(urlName);
+//			ProxyHost pc = new ProxyHost("www-proxy.exu.ericsson.se", 8080);
+			HttpsURLConnection  conn = (HttpsURLConnection) realUrl.openConnection();
+
+			System.out.println("Response Code : " + conn.getResponseCode());
+			System.out.println("Cipher Suite : " + conn.getCipherSuite());
+			System.out.println("\n");
+			
+			
+			conn.setRequestProperty("Accept", "*/*");
+			conn.setRequestProperty("Connection", "Keep-Alive");
+			conn.setRequestProperty("User-Agent",
+					"Mozilla/5.0 (Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.16 Safari/537.36");
 			conn.connect();
 			Map<String, List<String>> map = conn.getHeaderFields();
 			String header = "";
@@ -115,22 +167,27 @@ public class TestGetPost {
 		// PROXY
 		System.setProperty("http.proxyHost", "www-proxy.exu.ericsson.se");
 		System.setProperty("http.proxyPort", "8080");
+		System.setProperty("https.proxyHost", "www-proxy.exu.ericsson.se");
+		System.setProperty("https.proxyPort", "8080");
 		// GET
-
-		for (int i = 0; i < 800; i++) {
-			String s = TestGetPost.sendGet("http://ck101.com/?fromuid=1435479", null, ipGenerator());
-			// System.out.println("===============RESPONSE================\n" + s);
-			try {
-				long time = new Random().nextInt(10000) + 200;
-				System.out.println("Sleep for " + time + " now.......");
-				TimeUnit.MILLISECONDS.sleep(time);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			System.out.println("===============Total connection: " + (i + 1) + "================\n");
-
-		}
+		String s = TestGetPost.sendHttpsGet("https://www.google.com");
+		System.out.println("===============RESPONSE================\n" + s);
+		
+//		
+//		for (int i = 0; i < 800; i++) {
+//			String s = TestGetPost.sendGet("http://ck101.com/?fromuid=1435479", null, ipGenerator());
+//			// System.out.println("===============RESPONSE================\n" + s);
+//			try {
+//				long time = new Random().nextInt(10000) + 200;
+//				System.out.println("Sleep for " + time + " now.......");
+//				TimeUnit.MILLISECONDS.sleep(time);
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			System.out.println("===============Total connection: " + (i + 1) + "================\n");
+//
+//		}
 
 		// POST
 		// String s1 = TestGetPost.sendPost("http://posttestserver.com/post.php", "user=&pass=abc");
