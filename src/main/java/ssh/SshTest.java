@@ -23,13 +23,13 @@ public class SshTest {
 	public static void main(String[] args) throws IOException {
 		JSch jsch = new JSch();
 		try {
-			sshSession = jsch.getSession("osssupport", "tp201ap1.axe.k2.ericsson.se", 52000);
+			sshSession = jsch.getSession("tsadmin", "tp204ap1.axe.k2.ericsson.se", 4422);
 		} catch (JSchException e) {
 			// TODO Auto-generated catch block
 			throw new SocketException(e.getMessage());
 		}
 
-		sshSession.setPassword("osssupport");
+		sshSession.setPassword("Sommar.2013");
 		sshSession.setConfig("StrictHostKeyChecking", "no");
 		try {
 			sshSession.connect();
