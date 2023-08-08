@@ -11,6 +11,7 @@ public class Test {
 		temp.add("aaa");
 		temp.add("bbb");
 		Object value;
+		// TODO
 		value = temp;
 		Collection collection = (Collection) value;
 		value = (collection.isEmpty() ? null : collection.iterator().next());
